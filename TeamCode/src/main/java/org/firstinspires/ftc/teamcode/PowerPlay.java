@@ -1,0 +1,70 @@
+package org.firstinspires.ftc.teamcode;
+
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.linearOpMode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+
+import java.util.Date;
+import java.util.Random;
+
+@TeleOp
+public class PowerPlay extends LinearOpMode{
+    private DcMotorEx northEastMotor;
+    private DcMotorEx southEastMotor;
+    private DcMotorEx southWestMotor;
+    private DcMotorEx northWestMotor;
+    private BNO055IMU emuIMU1;
+    private BNO055IMU emuIMU2;
+
+
+    @Override
+    public void runOpMode() {
+        northEastMotor = hardwareMap.get(DcMotorEx.class, "northeastMotor");
+        northWestMotor = hardwareMap.get(DcMotorEx.class, "northwestMotor");
+        southEastMotor = hardwareMap.get(DcMotorEx.class, "southeastMotor");
+        southWestMotor = hardwareMap.get(DcMotorEx.class, "southwestMotor");
+        southWestMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        northWestMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        DriveTrain myDrive = new DriveTrain(northWestMotor, northEastMotor, southWestMotor, southEastMotor, 3);
+
+        //Initiates two IMUs for the control and expansion hubs
+        emuIMU1 = hardwareMap.get(BNO055IMU.class, "imu1");
+        emuIMU2 = hardwareMap.get(BNO055IMU.class, "imu2");
+        MxHeroXYZ tuxEmu1 = new MxHeroXYZ(emuIMU1);
+        MxHeroXYZ tuxEmu2 = new MxHeroXYZ(emuIMU2);
+
+        waitForStart();
+        telemetry.speak("I Have the Power! Rangers");
+        telemetry.update();
+
+        while (opModeIsActive()) {
+            //float powerRightY, float powerLeftY, float powerRightX, float powerLeftX
+           myDrive.setDrivePower(gamepad1.right_stick_y, gamepad1.left_stick_y,gamepad1.right_stick_x, gamepad1.left_stick_x);
+
+           myDrive.whereAmI(tuxEmu1.getAngleZExtrinsic());
+
+
+           telemetry.addData("Never Eat Soggy Waffles", myDrive.soggyWafflesScheduler(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left, gamepad1.a));
+/*
+           telemetry.addData("tuxEmu1 Intrinsic", tuxEmu1.getAngleZIntrinsic());
+           telemetry.addData("tuxEmu2 Intrinsic", tuxEmu2.getAngleZIntrinsic());
+           telemetry.addData("tuxEmu1 Extrinsic", tuxEmu1.getAngleZExtrinsic());
+           telemetry.addData("tuxEmu2 Extrinsic", tuxEmu2.getAngleZExtrinsic());
+*/
+           telemetry.addData("Where is Me", myDrive.xSaved.toString() + "," + myDrive.ySaved.toString());
+           telemetry.addData("rightMotorF", myDrive.rightMotorF.getCurrentPosition());
+           telemetry.addData("leftMotorF", myDrive.leftMotorF.getCurrentPosition());
+           telemetry.addData("rightMotorB", myDrive.rightMotorB.getCurrentPosition());
+           telemetry.addData("leftMotorB", myDrive.leftMotorB.getCurrentPosition());
+            telemetry.update();
+        }
+    }
+}
+
