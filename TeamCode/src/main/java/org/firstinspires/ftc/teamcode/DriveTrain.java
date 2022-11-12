@@ -158,6 +158,36 @@ public class DriveTrain {
         setMotorPowers();
     }
 
+    public void dPadDrive (boolean upPressed, boolean downPressed, boolean leftPressed, boolean rightPressed) {
+        if (upPressed) {
+            rightPowerF = 0.5;
+            leftPowerF = 0.5;
+            rightPowerB = 0.5;
+            leftPowerB = 0.5;
+        } else if (downPressed) {
+            rightPowerF = -0.5;
+            leftPowerF = -0.5;
+            rightPowerB = -0.5;
+            leftPowerB = -0.5;
+        } else if (leftPressed) {
+            rightPowerF = 0.5;
+            leftPowerF = -0.5;
+            rightPowerB = -0.5;
+            leftPowerB = 0.5;
+        } else if (rightPressed) {
+            rightPowerF = -0.5;
+            leftPowerF = 0.5;
+            rightPowerB = 0.5;
+            leftPowerB = -0.5;
+        } else {
+            rightPowerF = 0;
+            leftPowerF = 0;
+            rightPowerB = 0;
+            leftPowerB = 0;
+        }
+        setMotorPowers();
+    }
+
     public void setDriveTime (float driveForTime, float drivePower, int timeDrivetype) {
 //        Thread.sleep((long) (driveForTime * 1000));
 
@@ -232,7 +262,6 @@ public class DriveTrain {
 
     public int soggyWafflesScheduler (boolean upPressed, boolean downPressed, boolean rightPressed, boolean leftPressed, boolean taskCompleteIn) {
         //Moves the schedule down
-
         if (!completed) {
             if (taskCompleteIn && soggyWafflesScheduling.size() > 0) {
                 firstValue = soggyWafflesScheduling.get(0);
@@ -242,7 +271,6 @@ public class DriveTrain {
         } else if (!taskCompleteIn) {
             completed = false;
         }
-
         pressed = upPressed || downPressed || rightPressed || leftPressed;
         //Adds to the schedule
         if (!singlePress) {
@@ -261,7 +289,6 @@ public class DriveTrain {
         } else if (!pressed) {
             singlePress = false;
         }
-
         //get rid of last two entries in schedule if they counteract each other
         if (soggyWafflesScheduling.size() > 1 && soggyWafflesScheduling.get(soggyWafflesScheduling.size() - 2) + soggyWafflesScheduling.get(soggyWafflesScheduling.size() - 1) == 3) {
             soggyWafflesScheduling.remove(soggyWafflesScheduling.size() - 1);
@@ -318,13 +345,13 @@ public class DriveTrain {
             distanceNowNESW = returnAverageInchesNESW();
             elapsedDistanceNESW = distanceNowNESW - distanceSavedNESW;
 
-            xSaved = xSaved + (Math.round(((Math.sin(orientationNow) * elapsedDistanceNESW) / 0.001)) / 1000.0);  //use / 0.024 to make the unit tiles
-            ySaved = ySaved + (Math.round(((Math.cos(orientationNow) * elapsedDistanceNESW) / 0.001)) / -1000.0);
+            xSaved = xSaved + (Math.round(((Math.sin(orientationNow - 45) * elapsedDistanceNESW) / 0.024)) / 1000.0);  //use / 0.024 to make the unit tiles
+            ySaved = ySaved + (Math.round(((Math.cos(orientationNow - 45) * elapsedDistanceNESW) / 0.024)) / -1000.0);
             distanceSavedNWSE = distanceNowNWSE;
             distanceNowNWSE = returnAverageInchesNWSE();
             elapsedDistanceNWSE = distanceNowNWSE - distanceSavedNWSE;
-            ySaved = ySaved + (Math.round(((Math.sin(orientationNow) * elapsedDistanceNWSE) / 0.001)) / 1000.0);
-            xSaved = xSaved + (Math.round(((Math.cos(orientationNow) * elapsedDistanceNWSE) / 0.001)) / -1000.0);
+            ySaved = ySaved + (Math.round(((Math.sin(orientationNow + 45) * elapsedDistanceNWSE) / 0.024)) / 1000.0);
+            xSaved = xSaved + (Math.round(((Math.cos(orientationNow + 45) * elapsedDistanceNWSE) / 0.024)) / -1000.0);
         } else {
             /*distanceSavedEW = distanceNowEW;
             distanceNowEW = returnAverageInchesEW();
