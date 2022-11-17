@@ -16,4 +16,20 @@ public class ChainBox {
         chainBoxTop.setPower(0.5 * (chainY - clawY));
         chainBoxBottom.setPower(0.5 * (chainY + clawY));
     }
+    public void runChainBoxFull (boolean topUp, boolean topDown, boolean bottomUp, boolean bottomDown) {
+        if (topUp) {
+            chainBoxTop.setPower(0.5);
+        } else if (topDown) {
+            chainBoxTop.setPower(-0.5);
+        } else {
+            chainBoxTop.setPower(0.0);
+        }
+        if (bottomUp) {
+            chainBoxBottom.setPower(0.5);
+        } else if (bottomDown) {
+            chainBoxBottom.setPower(-0.5);
+        } else {
+            chainBoxBottom.setPower(0.0);
+        }
+    }
 }

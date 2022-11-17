@@ -24,7 +24,7 @@ public class PowerPlay extends LinearOpMode{
     private DcMotorEx chainBottom;
     private BNO055IMU emuIMU1;
     private BNO055IMU emuIMU2;
-
+    private Servo claw;
 
     @Override
     public void runOpMode() {
@@ -43,6 +43,10 @@ public class PowerPlay extends LinearOpMode{
         chainBottom.setDirection(DcMotorSimple.Direction.REVERSE);
         ChainBox boxerDoggo = new ChainBox(chainTop, chainBottom);
 
+        //initiates claw
+        claw = hardwareMap.get(Servo.class, "claw1");
+        boolean clawFlag = false;
+
         //Initiates two IMUs for the control and expansion hubs
         emuIMU1 = hardwareMap.get(BNO055IMU.class, "imu1");
         emuIMU2 = hardwareMap.get(BNO055IMU.class, "imu2");
@@ -60,9 +64,18 @@ public class PowerPlay extends LinearOpMode{
            //myDrive.setDrivePower(gamepad1.right_stick_y, gamepad1.left_stick_y,gamepad1.right_stick_x, gamepad1.left_stick_x);
             //myDrive.dPadDrive(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left);
             boxerDoggo.runChainBox(gamepad2.left_stick_y, gamepad2.right_stick_y);
+            boxerDoggo.runChainBoxFull(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.dpad_right, gamepad2.dpad_left);
+
+            if (clawFlag) {
+                if (gamepad2.a) {
+                    clawFlag = true;
+                    claw.setPosition(1 - claw.getPosition());
+                } else {
+                    clawFlag = false;
+                }
+            }
 
            myDrive.whereAmI(tuxEmu1.getAngleZExtrinsic());
-
 
            telemetry.addData("Never Eat Soggy Waffles", myDrive.soggyWafflesScheduler(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left, gamepad1.a));
 /*
