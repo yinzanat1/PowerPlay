@@ -60,11 +60,18 @@ public class PowerPlay extends LinearOpMode{
         telemetry.update();
 
         while (opModeIsActive()) {
-            //float powerRightY, float powerLeftY, float powerRightX, float powerLeftX
-           //myDrive.setDrivePower(gamepad1.right_stick_y, gamepad1.left_stick_y,gamepad1.right_stick_x, gamepad1.left_stick_x);
-            //myDrive.dPadDrive(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left);
-            boxerDoggo.runChainBox(gamepad2.left_stick_y, gamepad2.right_stick_y);
-            boxerDoggo.runChainBoxFull(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.dpad_right, gamepad2.dpad_left);
+//            float powerRightY, float powerLeftY, float powerRightX, float powerLeftX
+            myDrive.setDrivePower(gamepad1.right_stick_y, gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
+            //          myDrive.dPadDrive(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left);
+            //boxerDoggo.runChainBox(gamepad2.left_stick_y, gamepad2.right_stick_y);
+            boxerDoggo.clawUpDown(gamepad2.right_stick_y);
+            if (gamepad2.left_bumper) {
+                boxerDoggo.runChainBox(gamepad2.right_stick_y);
+            } else {
+                boxerDoggo.clawUpDown(gamepad2.right_stick_y);
+            }
+
+         //   boxerDoggo.runChainBoxFull(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.dpad_right, gamepad2.dpad_left);
 
             if (clawFlag) {
                 if (gamepad2.a) {
@@ -75,7 +82,7 @@ public class PowerPlay extends LinearOpMode{
                 }
             }
 
-           myDrive.whereAmI(tuxEmu1.getAngleZExtrinsic());
+ //          myDrive.whereAmI(tuxEmu1.getAngleZExtrinsic());
 
            telemetry.addData("Never Eat Soggy Waffles", myDrive.soggyWafflesScheduler(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left, gamepad1.a));
 /*
@@ -84,11 +91,17 @@ public class PowerPlay extends LinearOpMode{
            telemetry.addData("tuxEmu1 Extrinsic", tuxEmu1.getAngleZExtrinsic());
            telemetry.addData("tuxEmu2 Extrinsic", tuxEmu2.getAngleZExtrinsic());
 */
-           telemetry.addData("Where is Me", myDrive.xSaved.toString() + "," + myDrive.ySaved.toString());
-           telemetry.addData("rightMotorF", myDrive.rightMotorF.getCurrentPosition());
-           telemetry.addData("leftMotorF", myDrive.leftMotorF.getCurrentPosition());
-           telemetry.addData("rightMotorB", myDrive.rightMotorB.getCurrentPosition());
-           telemetry.addData("leftMotorB", myDrive.leftMotorB.getCurrentPosition());
+            telemetry.addData("Where is Me", myDrive.xSaved.toString() + "," + myDrive.ySaved.toString());
+            telemetry.addData("rightMotorF", myDrive.rightMotorF.getPower());
+            telemetry.addData("leftMotorF", myDrive.leftMotorF.getPower());
+            telemetry.addData("rightMotorB", myDrive.rightMotorB.getPower());
+            telemetry.addData("leftMotorB", myDrive.leftMotorB.getPower());
+            /*
+            telemetry.addData("rightMotorF", myDrive.rightMotorF.getCurrentPosition());
+            telemetry.addData("leftMotorF", myDrive.leftMotorF.getCurrentPosition());
+            telemetry.addData("rightMotorB", myDrive.rightMotorB.getCurrentPosition());
+            telemetry.addData("leftMotorB", myDrive.leftMotorB.getCurrentPosition());
+             */
             telemetry.update();
         }
     }

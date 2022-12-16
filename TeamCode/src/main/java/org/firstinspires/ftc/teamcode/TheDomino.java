@@ -57,7 +57,7 @@ float gain = 2;
             return 6;
         } else {
             return 7;
-            /*  FWF - this in't working, we need ti get a better way to find black and white
+            /*  FWF - this in't working, we need t0 get a better way to find black and white
             if (saturation < 0.2) {
                 return 7;
             } else if (value < 0.16) {

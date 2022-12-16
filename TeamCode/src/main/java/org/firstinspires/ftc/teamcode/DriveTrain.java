@@ -188,7 +188,7 @@ public class DriveTrain {
         setMotorPowers();
     }
 
-    public void setDriveTime (float driveForTime, float drivePower, int timeDrivetype) {
+    public void setDriveTime (float driveForTime, float drivePowerEW, float drivePowerNS, float drivePowerRot/*, int timeDrivetype*/) {
 //        Thread.sleep((long) (driveForTime * 1000));
 
         Timer timer = new Timer();
@@ -197,13 +197,31 @@ public class DriveTrain {
             @Override
             public void run() {
                 timerOn = false;
-                rightPower = 0;
-                leftPower = 0;
+                rightPowerF = 0;
+                rightPowerB = 0;
+                leftPowerF = 0;
+                leftPowerB = 0;
                 setMotorPowers();
             }
         }, (long) (driveForTime * 1000));
-        rightPower = drivePower;
-        leftPower = drivePower;
+        if (drivePowerNS != 0) {
+            rightPowerF = drivePowerNS;
+            rightPowerB = drivePowerNS;
+            leftPowerF = drivePowerNS;
+            leftPowerB = drivePowerNS;
+        }
+        if (drivePowerEW != 0) {
+            rightPowerF = -1 * drivePowerEW;
+            rightPowerB = drivePowerEW;
+            leftPowerF = drivePowerEW;
+            leftPowerB = -1 * drivePowerEW;
+        }
+        if (drivePowerRot != 0) {
+            rightPowerF = drivePowerRot;
+            rightPowerB = drivePowerRot;
+            leftPowerF = -1 * drivePowerRot;
+            leftPowerB = -1 * drivePowerRot;
+        }
         setMotorPowers();
     }
     public void driveByRevolution (float distance) {

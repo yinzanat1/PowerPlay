@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 
-@Autonomous
+
+@Autonomous(name = "AutoMode", preselectTeleOp = "PowerPlay")
 public class AutoMode extends LinearOpMode{
     private DcMotorEx northEastMotor;
     private DcMotorEx southEastMotor;
@@ -19,6 +21,7 @@ public class AutoMode extends LinearOpMode{
     private BNO055IMU emuIMU1;
     private BNO055IMU emuIMU2;
     private Servo claw;
+    private ColorSensor colorer;
 
     @Override
     public void runOpMode() {
@@ -47,17 +50,55 @@ public class AutoMode extends LinearOpMode{
         MxHeroXYZ tuxEmu1 = new MxHeroXYZ(emuIMU1);
         MxHeroXYZ tuxEmu2 = new MxHeroXYZ(emuIMU2);
 
+        //innit color
+        colorer = hardwareMap.get(ColorSensor.class, "color");
+        TheDomino dominate = new TheDomino(colorer);
+
+        Integer signalColor = 0;
+        Integer dominoColor = 8;
+
         waitForStart();
+        telemetry.speak("started " );
+        //auto
+        //identify signal color ->  = Loc 1, = Loc 2, = Loc 3
+        //domino color -> blue 5 = Blue A5 or Red F2, Red 1 = Blue A2 or Red F2
+        dominoColor = dominate.getColorNumber();
+        /*if domino blue turn left, deposit cone on ground, if domino red turn right and do the same
+        turn back to original position
+        */
+        if (6 >= dominoColor && dominoColor >= 4) {
+            myDrive.setDriveTime(2, 0, 0, 1);
+            myDrive.setDriveTime(2, 0, 0, -1);
+        } else if (2 >= dominoColor && dominoColor >= 0) {
+            myDrive.setDriveTime(2, 0, 0, -1);
+            myDrive.setDriveTime(2, 0, 0, 1);
+        } else {
+            myDrive.setDriveTime(2, 0, 0, 1);
+            myDrive.setDriveTime(2, 0, 0, -1);
+        }
+        //extend the tower
+        boxerDoggo.chainBoxTime(10, 1, 0);
+        //drive forward into Loc 2
+        myDrive.setDriveTime(5, 0, 0.5f, 0);
+        //If Loc = 1 drive left, Loc = 2 stay, Loc = 3 drive right
+        if (signalColor == 1) {
+            myDrive.setDriveTime(5, 0.5f, 0, 0);
+        } else if (signalColor == 3) {
+            myDrive.setDriveTime(5, -0.5f, 0, 0);
+        } else {
+            myDrive.setDriveTime(0, 0, 0, 0);
+        }
+        
         myDrive.xSaved = 0.0;
         myDrive.ySaved = 0.0;
-        telemetry.speak("I Have the Power! Rangers");
+        telemetry.speak("I found " + dominoColor.toString() );
         telemetry.update();
 
         while (opModeIsActive()) {
             //float powerRightY, float powerLeftY, float powerRightX, float powerLeftX
            //myDrive.setDrivePower(gamepad1.right_stick_y, gamepad1.left_stick_y,gamepad1.right_stick_x, gamepad1.left_stick_x);
             //myDrive.dPadDrive(gamepad1.dpad_up, gamepad1.dpad_down, gamepad1.dpad_right, gamepad1.dpad_left);
-            boxerDoggo.runChainBox(gamepad2.left_stick_y, gamepad2.right_stick_y);
+           // boxerDoggo.runChainBox(gamepad2.left_stick_y, gamepad2.right_stick_y);
             boxerDoggo.runChainBoxFull(gamepad2.dpad_up, gamepad2.dpad_down, gamepad2.dpad_right, gamepad2.dpad_left);
 
             if (clawFlag) {
