@@ -62,6 +62,7 @@ public class AutoMode extends LinearOpMode{
         //initiates claw
         claw = hardwareMap.get(Servo.class, "claw1");
         boolean clawFlag = false;
+        claw.setPosition(1);
 
         // set up some time
         Date date = new Date();
@@ -72,7 +73,7 @@ public class AutoMode extends LinearOpMode{
         vuforiaPOWERPLAY = new VuforiaCurrentGame();
         tfod = new Tfod();
         vuforiaPOWERPLAY.initialize(
-                "", // vuforiaLicenseKey
+                "Abn+PKD/////AAABmcPyDenXuU4ela7/eWL9rDkGTGdQs6RJxYWgTl5WT+A3+tnRrnU22r4hlrTDcZvkhoLzEeprWQWFNNCI1ZOezhjdNFAqLH2RI7TxyOvg/LsYgdlRreW+8FJ09io2pQV2OdivD91ychQgVi9sQT08YdqzP+vvr3LN5UKDk3soWyGgQEbf8J9FPJcIWlrm62ZU8+mdDX0J7ENAojyC2/9VgSYdL23Pcft+8hJK+jHQ3AFIYgkIJEIvXjFZtCBEhmCp07B9lXvetjvuCOPY0NqjvEzeXOypeNV3lqQbKdbFwW0JWG9MhmpCl6oamIXKHlCyLyASpoJBb87pTMVBehpYegFYvud2ovzPkaC6Shce9rEG", // vuforiaLicenseKey
                 hardwareMap.get(WebcamName.class, "Webcam 1"), // cameraName
                 "", // webcamCalibrationFilename
                 false, // useExtendedTracking
@@ -141,40 +142,133 @@ public class AutoMode extends LinearOpMode{
         colorer = hardwareMap.get(ColorSensor.class, "color");
         TheDomino dominate = new TheDomino(colorer);
 
-        Integer signalColor = 0;
-        Integer dominoColor = 8;
+        Integer signalColor = 2;
+        Integer dominoColor = 5;
         //auto
         //identify signal color ->  = Loc 1, = Loc 2, = Loc 3
         //domino color -> blue 5 = Blue A5 or Red F2, Red 1 = Blue A2 or Red F2
-        dominoColor = dominate.getColorNumber();
+        //dominoColor = dominate.getColorNumber();
         telemetry.speak("I found " + dominoColor.toString() );
         telemetry.addData ("Init", "I found " + dominoColor.toString() );
+        telemetry.addData("claw", claw.getPosition());
+
         telemetry.update();
 
         waitForStart();
+        telemetry.addData("step Info", "Before loop, step " + currentStep.toString());
+        telemetry.update();
+        claw.setPosition(1);
 
         while (opModeIsActive()) {
         /*if domino blue turn left, deposit cone on ground, if domino red turn right and do the same
         turn back to original position
         */
+
             date = new Date();
 
             telemetry.addData("eTime", eTime);
             telemetry.addData("theTime", date.getTime());
             telemetry.addData("diff", date.getTime() - eTime);
             telemetry.addData("step", currentStep);
+            telemetry.addData("claw", claw.getPosition());
 
             if (currentStep == 0) {
-                if (eTime == 0) {   // start of step 1
+                if (eTime == 0) {   // start of step 0
                     eTime = date.getTime();
-                    if (6 >= dominoColor && dominoColor >= 4) {     // green blue purple
-                        myDrive.setDrivePower (0, 0.5f,0,0.5f);
-                    } else {            // everything else
-                        myDrive.setDrivePower (0, 0.5f,0,0.5f);
-                    }
+                    claw.setPosition(0);
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
                 }
 
-                if ((date.getTime() - eTime) < 2000L) {
+                if (date.getTime() - eTime <= 1000L) {
+                   //nada
+                } else if (claw.getPosition() == 0) {
+                    // end of step 0
+                    eTime = 0L;
+                    currentStep++;
+                    currentStep++;
+                    telemetry.addData("step Info", "ending step " + currentStep.toString());
+                    telemetry.update();
+                }
+            }
+            if (currentStep == -1) {
+                if (eTime == 0) {   // start of step 1
+                    eTime = date.getTime();
+                    claw.setPosition(0);
+                    myDrive.setDrivePower (-0.5f, -0.5f,0,0);
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+
+                if ((date.getTime() - eTime) <= 500L) {
+                    // nothing while waiting
+                } else {        // end of step 1
+                    eTime = 0L;
+                    currentStep++;
+                    myDrive.setDrivePower (0, 0,0,0);
+                }
+            }
+            if (currentStep == 2) {
+                if (eTime == 0) {   // start of step 2
+                    eTime = date.getTime();
+                    if (6 >= dominoColor && dominoColor >= 4) {     // green blue purple
+                        myDrive.setDrivePower (0, 0,-0.5f,-0.5f);
+                    } else {            // everything else
+                        myDrive.setDrivePower (0, 0,0.5f,0.5f);
+                    }
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+
+                if ((date.getTime() - eTime) <= 450L) {
+                    // nothing while waiting
+                } else {        // end of step 2
+                    eTime = 0L;
+                    currentStep++;
+                    myDrive.setDrivePower (0, 0,0,0);
+                }
+            }
+            if (currentStep == 3) {
+                if (eTime == 0) {   // start of step 2
+                    eTime = date.getTime();
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+
+                if ((date.getTime() - eTime) <= 1000L) {
+                    // nothing while waiting
+                } else {        // end of step 2
+                    eTime = 0L;
+                    currentStep++;
+                    myDrive.setDrivePower (0, 0,0,0);
+                }
+            }
+            if (currentStep == 4) {
+                if (eTime == 0) {   // start of step 3
+                    eTime = date.getTime();
+                    claw.setPosition(1);
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+                if (date.getTime() - eTime <= 1000L) {
+                    //zip
+                } else if (claw.getPosition() == 1) {
+                    // end of step 3
+                    eTime = 0L;
+                    currentStep++;
+                    myDrive.setDrivePower (0, 0,0,0);
+                }
+            }
+            if (currentStep == 5) {
+                if (eTime == 0) {   // start of step 1
+                    eTime = date.getTime();
+                    claw.setPosition(0);
+                    myDrive.setDrivePower (0.25f, 0.25f,0,0);
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+
+                if ((date.getTime() - eTime) <= 500L) {
                     // nothing while waiting
                 } else {        // end of step 1
                     eTime = 0L;
@@ -183,17 +277,36 @@ public class AutoMode extends LinearOpMode{
                 }
             }
 
-            if (currentStep == 1) {
-                if (eTime == 0) {   // start of step 1
+            if (currentStep == 6) {
+                if (eTime == 0) {   // start of step 3
                     eTime = date.getTime();
                     if (6 >= dominoColor && dominoColor >= 4) {     // green blue purple
-                        myDrive.setDrivePower (0, 0.5f,0,-0.5f);
+                        myDrive.setDrivePower (0, 0,0.5f,0.5f);
                     } else {            // everything else
-                        myDrive.setDrivePower (0, -0.5f,0,0.5f);
+                        myDrive.setDrivePower (0, 0,-0.5f,-0.5f);
                     }
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
                 }
 
-                if ((date.getTime() - eTime) < 1000L) {
+                if ((date.getTime() - eTime) < 450L) {
+                    // nothing while waiting
+                } else {        // end of step 3
+                    eTime = 0L;
+                    currentStep++;
+                    myDrive.setDrivePower (0, 0,0,0);
+                }
+            }
+            if (currentStep == 7) {
+                if (eTime == 0) {   // start of step 1
+                    eTime = date.getTime();
+                    claw.setPosition(0);
+                    myDrive.setDrivePower (-0.5f, -0.5f,0,0);
+                    telemetry.addData("step Info", "starting step " + currentStep.toString());
+                    telemetry.update();
+                }
+
+                if ((date.getTime() - eTime) <= 1000L) {
                     // nothing while waiting
                 } else {        // end of step 1
                     eTime = 0L;

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.lin
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
@@ -156,30 +157,31 @@ public class DriveTrain {
             rightPower = powerRightY;
             leftPower = powerLeftY;
         }
+
         setMotorPowers();
     }
 
     public void dPadDrive (boolean upPressed, boolean downPressed, boolean leftPressed, boolean rightPressed) {
-        if (upPressed) {
-            rightPowerF = 0.5;
-            leftPowerF = 0.5;
-            rightPowerB = 0.5;
-            leftPowerB = 0.5;
-        } else if (downPressed) {
-            rightPowerF = -0.5;
-            leftPowerF = -0.5;
-            rightPowerB = -0.5;
-            leftPowerB = -0.5;
+        if (downPressed) {
+            rightPowerF = 1;
+            leftPowerF = 1;
+            rightPowerB = 1;
+            leftPowerB = 1;
+        } else if (upPressed) {
+            rightPowerF = -1;
+            leftPowerF = -1;
+            rightPowerB = -1;
+            leftPowerB = -1;
         } else if (leftPressed) {
-            rightPowerF = 0.5;
-            leftPowerF = -0.5;
-            rightPowerB = -0.5;
-            leftPowerB = 0.5;
+            rightPowerF = 1;
+            leftPowerF = -1;
+            rightPowerB = -1;
+            leftPowerB = 1;
         } else if (rightPressed) {
-            rightPowerF = -0.5;
-            leftPowerF = 0.5;
-            rightPowerB = 0.5;
-            leftPowerB = -0.5;
+            rightPowerF = -1;
+            leftPowerF = 1;
+            rightPowerB = 1;
+            leftPowerB = -1;
         } else {
             rightPowerF = 0;
             leftPowerF = 0;
@@ -272,10 +274,10 @@ public class DriveTrain {
         }
 */
         if (driveType == 3) {
-            rightMotorF.setPower(rightPowerF);
-            leftMotorF.setPower (leftPowerF);
-            rightMotorB.setPower(rightPowerB);
-            leftMotorB.setPower (leftPowerB);
+            rightMotorF.setPower(rightPowerF * 0.7);
+            leftMotorF.setPower (leftPowerF * 0.7);
+            rightMotorB.setPower(rightPowerB * 0.7);
+            leftMotorB.setPower (leftPowerB * 0.7);
         }
     }
 
